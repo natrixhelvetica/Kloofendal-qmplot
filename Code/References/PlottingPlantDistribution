@@ -1,0 +1,100 @@
+# Stadia 
+
+# packages
+library(ggmap)
+library(leaflet)
+library(RColorBrewer)  # For color palettes, you can adjust this as needed
+
+# API key
+register_stadiamaps("6e2e6b03-69ec-43a3-9306-7184e5f97902", write = TRUE)
+
+# basemap example. 
+bbox <- c(left = 24.61, bottom = 59.37, right = 24.94, top = 59.5)
+get_stadiamap(bbox, zoom = 12, maptype = "stamen_toner_lite") %>% ggmap()
+
+# qmplot example
+qmplot(Longitude, Latitude, data = df, maptype = "stamen_toner_lite", color = I("red"))
+
+qmplot(Longitude, Latitude, data=FroK_AIP_Data, maptype = "stamen_toner_lite", colour=Species, size=Number)
+
+library(ggmap)
+
+qmplot(Longitude, Latitude, data = FroK_AIP_Data, 
+maptype = "stamen_toner_lite", 
+colour = Species, 
+size = Number) +
+guides(color = guide_legend(title = NULL)) + 
+theme(legend.position = "bottom")
+
+
+library(ggmap)
+
+# Example 1: Plot with red points on satellite imagery
+qmplot(Longitude, Latitude, data = df, maptype = "satellite", color = I("red"))
+
+# Example 2: Plot with species-colored points on satellite imagery
+qmplot(Longitude, Latitude, data = FroK_AIP_Data, 
+       maptype = "satellite", 
+       colour = Species, 
+       size = Number) +
+  guides(color = guide_legend(title = NULL)) + 
+  theme(legend.position = "bottom")
+
+
+
+library(leaflet)
+library(RColorBrewer)  # For color palettes, you can adjust this as needed
+
+# Create a color palette based on the unique values in the Species column
+species_colors <- colorFactor(palette = "Set3", domain = FroK_AIP_Data$Species)
+
+leaflet(FroK_AIP_Data) %>%
+addTiles() %>%
+addCircleMarkers(
+~Longitude, ~Latitude,
+color = ~species_colors(Species),  # Use the colorFactor to map species to colors
+radius = ~Number,
+popup = ~paste("Species: ", Species, "<br>Number: ", Number))
+
+# Create a color palette based on the unique values in the Species column
+species_colors <- colorFactor(palette = "Set3", domain = FroK_AIP_Data$Species)
+
+# Add small random noise to latitude and longitude
+jitter_factor <- 0.0005  # Adjust this based on the desired amount of jitter
+
+jittered_data <- transform(FroK_AIP_Data,
+Latitude = Latitude + runif(nrow(FroK_AIP_Data), -jitter_factor, jitter_factor),
+Longitude = Longitude + runif(nrow(FroK_AIP_Data), -jitter_factor, jitter_factor))
+leaflet(jittered_data) %>%
+  addTiles() %>%
+  addCircleMarkers(
+    ~Longitude, ~Latitude,
+    color = ~species_colors(Species),
+    radius = ~sqrt(Number),
+    popup = ~paste("Species: ", Species, "<br>Number: ", Number))
+
+library(leaflet)
+library(RColorBrewer)
+
+# Create a color palette based on the unique values in the Species column
+species_colors <- colorFactor(palette = "Set3", domain = FroK_AIP_Data$Species)
+
+# Add small random noise to latitude and longitude
+jitter_factor <- 0.0005  # Adjust this based on the desired amount of jitter
+
+jittered_data <- transform(FroK_AIP_Data,
+Latitude = Latitude + runif(nrow(FroK_AIP_Data), -jitter_factor, jitter_factor),
+Longitude = Longitude + runif(nrow(FroK_AIP_Data), -jitter_factor, jitter_factor))
+
+# Use Esri World Imagery as the tile provider
+leaflet(jittered_data) %>%
+  addProviderTiles("Esri.WorldImagery") %>%
+  addCircleMarkers(
+    ~Longitude, ~Latitude,
+    color = ~species_colors(Species),
+    radius = ~sqrt(Number),
+    popup = ~paste("Species: ", Species, "<br>Number: ", Number))
+	
+	
+	
+
